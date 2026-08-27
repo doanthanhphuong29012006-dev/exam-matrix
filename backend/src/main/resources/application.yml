@@ -1,0 +1,19 @@
+spring.application.name: backend
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/exam_matrix
+    username: postgres
+    password: conchotreoquacayoi
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
