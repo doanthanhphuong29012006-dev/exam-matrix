@@ -9,4 +9,10 @@ public interface SubjectService {
     List<SubjectResponse> getAllSubjects();
 
     SubjectResponse createNewSubject(SubjectRequest request);
+
+    SubjectResponse getSubjectById(Integer id);
+
+    SubjectResponse updateSubjectById(Integer id, SubjectRequest request);
+
+    void deleteSubjectById(Integer id);
 }

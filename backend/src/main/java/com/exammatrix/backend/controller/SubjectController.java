@@ -30,4 +30,27 @@ public class SubjectController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SubjectResponse> getSubjectDetail(@PathVariable("id") Integer id) {
+        SubjectResponse response = subjectService.getSubjectById(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<SubjectResponse> updateSubject(
+            @PathVariable("id") Integer id,
+            @Valid @RequestBody SubjectRequest request) {
+        SubjectResponse response = subjectService.updateSubjectById(id, request);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSubject(@PathVariable("id") Integer id) {
+        subjectService.deleteSubjectById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -17,7 +17,7 @@ public class SubjectRequest {
     private String code;
 
     @NotBlank(message = "Tên môn học không được để trống")
-    @Size(max = 50, message = "Tên môn học không được vượt quá 10 ký tự!")
+    @Size(max = 50, message = "Tên môn học không được vượt quá 50 ký tự!")
     private String name;
 
     private String description;
