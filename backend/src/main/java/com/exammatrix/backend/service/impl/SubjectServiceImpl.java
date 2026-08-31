@@ -85,8 +85,7 @@ public class SubjectServiceImpl implements SubjectService {
         subject.setName(request.getName().trim());
         subject.setDescription(request.getDescription());
 
-        Subject savedSubject =
-                subjectRepository.save(subject);
+        Subject savedSubject = subjectRepository.save(subject);
 
         return convertToResponse(savedSubject);
     }
