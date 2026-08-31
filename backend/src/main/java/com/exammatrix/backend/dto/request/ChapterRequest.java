@@ -25,5 +25,4 @@ public class ChapterRequest {
     @NotNull
     @Min(value = 1, message = "Id môn học không hợp lệ!")
     private Integer subjectId;
-
 }
