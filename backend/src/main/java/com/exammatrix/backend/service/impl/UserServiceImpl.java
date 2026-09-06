@@ -7,7 +7,7 @@ import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.dto.response.UserResponse;
 import com.exammatrix.backend.entity.Role;
 import com.exammatrix.backend.entity.User;
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 import com.exammatrix.backend.repository.RoleRepository;
 import com.exammatrix.backend.repository.UserRepository;
 import com.exammatrix.backend.service.UserService;
@@ -37,11 +37,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageResponse<UserResponse> getAllUsers(
-            String search,
-            String role,
-            UserStatus status,
-            Integer page,
-            Integer size
+        String search,
+        String role,
+        UserStatus status,
+        Integer page,
+        Integer size
     ) {
         int safePage = page == null || page < 0 ? 0 : page;
 
@@ -56,18 +56,18 @@ public class UserServiceImpl implements UserService {
         String normalizedRole = normalizeFilter(role);
 
         Pageable pageable = PageRequest.of(
-                safePage,
-                safeSize,
-                Sort.by(
-                        Sort.Order.desc("createdAt")
-                )
+            safePage,
+            safeSize,
+            Sort.by(
+                Sort.Order.desc("createdAt")
+            )
         );
 
         Page<User> userPage = userRepository.searchUsers(
-                normalizedSearch,
-                normalizedRole,
-                status,
-                pageable
+            normalizedSearch,
+            normalizedRole,
+            status,
+            pageable
         );
 
         List<UserResponse> responses = new ArrayList<>();
@@ -77,11 +77,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return new PageResponse<>(
-                responses,
-                userPage.getNumber(),
-                userPage.getSize(),
-                userPage.getTotalElements(),
-                userPage.getTotalPages()
+            responses,
+            userPage.getNumber(),
+            userPage.getSize(),
+            userPage.getTotalElements(),
+            userPage.getTotalPages()
         );
     }
 
@@ -95,26 +95,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse createUser(CreateUserRequest request) {
         String username = request
-                .getUsername()
-                .trim()
-                .toLowerCase(Locale.ROOT);
+            .getUsername()
+            .trim()
+            .toLowerCase(Locale.ROOT);
 
         String email = request
-                .getEmail()
-                .trim()
-                .toLowerCase(Locale.ROOT);
+            .getEmail()
+            .trim()
+            .toLowerCase(Locale.ROOT);
 
         if (userRepository.existsByUsernameIgnoreCase(username)) {
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Tên đăng nhập đã tồn tại"
+                HttpStatus.CONFLICT,
+                "Tên đăng nhập đã tồn tại"
             );
         }
 
         if (userRepository.existsByEmailIgnoreCase(email)) {
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Email đã tồn tại"
+                HttpStatus.CONFLICT,
+                "Email đã tồn tại"
             );
         }
 
@@ -139,16 +139,16 @@ public class UserServiceImpl implements UserService {
         User user = findUserById(id);
 
         String email = request
-                .getEmail()
-                .trim()
-                .toLowerCase(Locale.ROOT);
+            .getEmail()
+            .trim()
+            .toLowerCase(Locale.ROOT);
 
         boolean emailExisted = userRepository.existsByEmailIgnoreCaseAndIdNot(email, id);
 
         if (emailExisted) {
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "Email đã được sử dụng"
+                HttpStatus.CONFLICT,
+                "Email đã được sử dụng"
             );
         }
 
@@ -182,8 +182,8 @@ public class UserServiceImpl implements UserService {
 
         if (result.isEmpty()) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Không tìm thấy người dùng có id " + id
+                HttpStatus.NOT_FOUND,
+                "Không tìm thấy người dùng có id " + id
             );
         }
 
@@ -195,8 +195,8 @@ public class UserServiceImpl implements UserService {
 
         if (result.isEmpty()) {
             throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
-                    "Không tìm thấy vai trò " + roleName
+                HttpStatus.NOT_FOUND,
+                "Không tìm thấy vai trò " + roleName
             );
         }
 
@@ -205,19 +205,19 @@ public class UserServiceImpl implements UserService {
 
     private UserResponse convertToResponse(User user) {
         String roleName = user
-                .getRole()
-                .getName()
-                .toUpperCase(Locale.ROOT);
+            .getRole()
+            .getName()
+            .toUpperCase(Locale.ROOT);
 
         return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getFullName(),
-                roleName,
-                user.getStatus(),
-                user.getCreatedAt(),
-                user.getUpdatedAt()
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getFullName(),
+            roleName,
+            user.getStatus(),
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 

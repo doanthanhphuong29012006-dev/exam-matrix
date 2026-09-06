@@ -1,6 +1,6 @@
 package com.exammatrix.backend.entity;
 
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

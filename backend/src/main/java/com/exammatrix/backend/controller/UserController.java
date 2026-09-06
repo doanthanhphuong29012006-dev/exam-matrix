@@ -5,7 +5,7 @@ import com.exammatrix.backend.dto.request.UpdateUserRequest;
 import com.exammatrix.backend.dto.request.UpdateUserStatusRequest;
 import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.dto.response.UserResponse;
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 import com.exammatrix.backend.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,20 +24,20 @@ public class UserController {
     @GetMapping
     public ResponseEntity<PageResponse<UserResponse>>
     getAllUsers(
-            @RequestParam(required = false)
-            String search,
+        @RequestParam(required = false)
+        String search,
 
-            @RequestParam(required = false)
-            String role,
+        @RequestParam(required = false)
+        String role,
 
-            @RequestParam(required = false)
-            UserStatus status,
+        @RequestParam(required = false)
+        UserStatus status,
 
-            @RequestParam(defaultValue = "0")
-            Integer page,
+        @RequestParam(defaultValue = "0")
+        Integer page,
 
-            @RequestParam(defaultValue = "10")
-            Integer size
+        @RequestParam(defaultValue = "10")
+        Integer size
     ) {
         PageResponse<UserResponse> response = userService.getAllUsers(search, role, status, page, size);
 
@@ -60,22 +60,22 @@ public class UserController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(
-            @PathVariable("id") UUID id,
-            @Valid @RequestBody UpdateUserRequest request) {
-        UserResponse response = userService.updateUserById(id, request);
+        @PathVariable("id") UUID id,
+        @Valid @RequestBody UpdateUserRequest request) {
+            UserResponse response = userService.updateUserById(id, request);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<UserResponse> updateStatus(
-            @PathVariable("id") UUID id,
+        @PathVariable("id") UUID id,
 
-            @Valid
-            @RequestBody
-            UpdateUserStatusRequest request) {
-        UserResponse response = userService.updateUserStatus(id, request);
+        @Valid
+        @RequestBody
+        UpdateUserStatusRequest request) {
+            UserResponse response = userService.updateUserStatus(id, request);
 
-        return ResponseEntity.ok(response);
+            return ResponseEntity.ok(response);
     }
 }

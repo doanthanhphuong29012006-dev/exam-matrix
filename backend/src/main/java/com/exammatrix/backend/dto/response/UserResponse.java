@@ -1,6 +1,6 @@
 package com.exammatrix.backend.dto.response;
 
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

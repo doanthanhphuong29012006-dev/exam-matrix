@@ -1,6 +1,6 @@
 package com.exammatrix.backend.dto.request;
 
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 

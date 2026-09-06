@@ -1,4 +1,4 @@
-package com.exammatrix.backend.enums;
+package com.exammatrix.backend.entity.enums;
 
 public enum UserStatus {
     ACTIVE,

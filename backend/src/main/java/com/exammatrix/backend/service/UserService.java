@@ -5,7 +5,7 @@ import com.exammatrix.backend.dto.request.UpdateUserRequest;
 import com.exammatrix.backend.dto.request.UpdateUserStatusRequest;
 import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.dto.response.UserResponse;
-import com.exammatrix.backend.enums.UserStatus;
+import com.exammatrix.backend.entity.enums.UserStatus;
 
 import java.util.UUID;
 
