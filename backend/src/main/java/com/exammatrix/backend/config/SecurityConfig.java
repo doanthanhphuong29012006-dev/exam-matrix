@@ -155,6 +155,11 @@ public class SecurityConfig {
                 .requestMatchers("/questions/**")
                 .hasAnyRole("ADMIN", "TEACHER")
 
+                .requestMatchers(
+                    "/exam-matrices",
+                    "/exam-matrices/**"
+                ).hasAnyRole("ADMIN", "TEACHER")
+
                 .anyRequest().authenticated()
             )
 
