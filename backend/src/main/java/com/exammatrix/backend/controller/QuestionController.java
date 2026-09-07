@@ -33,9 +33,7 @@ public class QuestionController {
             @Min(value = 1, message = "ID môn học không hợp lệ")
             Integer subjectId
     ) {
-        return ResponseEntity.ok(
-                questionService.getAvailability(subjectId)
-        );
+        return ResponseEntity.ok(questionService.getAvailability(subjectId));
     }
 
     @GetMapping
@@ -64,37 +62,28 @@ public class QuestionController {
     ) {
         PageResponse<QuestionResponse> response =
                 questionService.getAllQuestions(
-                        search,
-                        subjectId,
-                        chapterId,
-                        difficulty,
-                        type,
-                        page,
-                        size
+                    search,
+                    subjectId,
+                    chapterId,
+                    difficulty,
+                    type,
+                    page,
+                    size
                 );
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<QuestionResponse> getQuestionById(
-            @PathVariable UUID id
-    ) {
-        return ResponseEntity.ok(
-                questionService.getQuestionById(id)
-        );
+    public ResponseEntity<QuestionResponse> getQuestionById(@PathVariable UUID id) {
+        return ResponseEntity.ok(questionService.getQuestionById(id));
     }
 
     @PostMapping
-    public ResponseEntity<QuestionResponse> createQuestion(
-            @Valid @RequestBody QuestionRequest request
-    ) {
-        QuestionResponse response =
-                questionService.createQuestion(request);
+    public ResponseEntity<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest request) {
+        QuestionResponse response = questionService.createQuestion(request);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PatchMapping("/{id}")
@@ -102,15 +91,11 @@ public class QuestionController {
             @PathVariable UUID id,
             @Valid @RequestBody QuestionRequest request
     ) {
-        return ResponseEntity.ok(
-                questionService.updateQuestion(id, request)
-        );
+        return ResponseEntity.ok(questionService.updateQuestion(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteQuestion(
-            @PathVariable UUID id
-    ) {
+    public ResponseEntity<Void> deleteQuestion(@PathVariable UUID id) {
         questionService.deleteQuestion(id);
 
         return ResponseEntity.noContent().build();
