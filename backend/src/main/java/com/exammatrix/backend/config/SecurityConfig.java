@@ -152,6 +152,9 @@ public class SecurityConfig {
                     "/chapters/**"
                 ).hasRole("ADMIN")
 
+                .requestMatchers("/questions/**")
+                .hasAnyRole("ADMIN", "TEACHER")
+
                 .anyRequest().authenticated()
             )
 
