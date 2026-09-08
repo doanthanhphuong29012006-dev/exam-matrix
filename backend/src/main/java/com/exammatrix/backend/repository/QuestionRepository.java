@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,4 +63,10 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         "answers"
     })
     Optional<Question> findById(UUID id);
+
+    @EntityGraph(attributePaths = "answers")
+    List<Question> findAllByChapter_IdAndDifficulty(
+            Integer chapterId,
+            Difficulty difficulty
+    );
 }

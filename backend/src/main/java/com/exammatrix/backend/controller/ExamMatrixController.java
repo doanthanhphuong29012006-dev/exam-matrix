@@ -1,15 +1,19 @@
 package com.exammatrix.backend.controller;
 
 import com.exammatrix.backend.dto.request.ExamMatrixRequest;
+import com.exammatrix.backend.dto.request.GenerateExamPapersRequest;
 import com.exammatrix.backend.dto.response.ExamMatrixResponse;
+import com.exammatrix.backend.dto.response.ExamPaperDetailResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.service.ExamMatrixService;
+import com.exammatrix.backend.service.ExamPaperService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -17,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ExamMatrixController {
     private final ExamMatrixService examMatrixService;
+    private final ExamPaperService examPaperService;
 
     @GetMapping
     public ResponseEntity<PageResponse<ExamMatrixResponse>> getAllExamMatrices(
@@ -70,5 +75,19 @@ public class ExamMatrixController {
         examMatrixService.deleteExamMatrix(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/generate")
+    public ResponseEntity<List<ExamPaperDetailResponse>> generateExamPapers(
+            @PathVariable UUID id,
+            @Valid @RequestBody
+            GenerateExamPapersRequest request
+    ) {
+        List<ExamPaperDetailResponse> responses = examPaperService.generateExamPapers(
+                id,
+                request
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responses);
     }
 }

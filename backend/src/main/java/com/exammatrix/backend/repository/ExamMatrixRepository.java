@@ -1,10 +1,12 @@
 package com.exammatrix.backend.repository;
 
 import com.exammatrix.backend.entity.ExamMatrix;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -49,4 +51,14 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
             "configs.chapter"
     })
     Optional<ExamMatrix> findById(UUID id);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+    SELECT m
+    FROM ExamMatrix m
+    WHERE m.id = :id
+    """)
+    Optional<ExamMatrix> findByIdForUpdate(
+            @Param("id") UUID id
+    );
 }

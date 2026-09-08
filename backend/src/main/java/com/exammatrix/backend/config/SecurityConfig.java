@@ -160,6 +160,11 @@ public class SecurityConfig {
                     "/exam-matrices/**"
                 ).hasAnyRole("ADMIN", "TEACHER")
 
+                .requestMatchers(
+                        "/exam-papers",
+                        "/exam-papers/**"
+                ).hasAnyRole("ADMIN", "TEACHER")
+
                 .anyRequest().authenticated()
             )
 
