@@ -47,4 +47,6 @@ public interface ExamPaperRepository extends JpaRepository<ExamPaper, UUID> {
             "paperQuestions.question"
     })
     Optional<ExamPaper> findById(UUID id);
+
+    long countByExamMatrix_Teacher_Id(UUID teacherId);
 }

@@ -69,4 +69,6 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
             Integer chapterId,
             Difficulty difficulty
     );
+
+    long countByDifficulty(Difficulty difficulty);
 }

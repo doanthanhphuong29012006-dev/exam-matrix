@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -60,5 +61,13 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
     """)
     Optional<ExamMatrix> findByIdForUpdate(
             @Param("id") UUID id
+    );
+
+    long countByTeacher_Id(UUID teacherId);
+
+    List<ExamMatrix> findTop5ByOrderByUpdatedAtDesc();
+
+    List<ExamMatrix> findTop5ByTeacher_IdOrderByUpdatedAtDesc(
+            UUID teacherId
     );
 }

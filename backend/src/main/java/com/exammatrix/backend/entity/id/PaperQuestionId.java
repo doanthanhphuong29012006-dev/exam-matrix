@@ -1,4 +1,4 @@
-package com.exammatrix.backend.entity;
+package com.exammatrix.backend.entity.id;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

@@ -165,6 +165,9 @@ public class SecurityConfig {
                         "/exam-papers/**"
                 ).hasAnyRole("ADMIN", "TEACHER")
 
+                .requestMatchers("/dashboard/**")
+                .hasAnyRole("ADMIN", "TEACHER")
+
                 .anyRequest().authenticated()
             )
 
