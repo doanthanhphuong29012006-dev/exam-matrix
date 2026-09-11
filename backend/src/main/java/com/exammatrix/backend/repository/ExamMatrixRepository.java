@@ -25,7 +25,7 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
         WHERE (
             :search IS NULL
             OR LOWER(m.title) LIKE LOWER(
-                CONCAT('%', :search, '%')
+                CONCAT('%', CAST(:search AS string), '%')
             )
         )
         AND (
@@ -36,7 +36,7 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
             :teacherId IS NULL
             OR t.id = :teacherId
         )
-        """)
+    """)
     Page<ExamMatrix> searchExamMatrices(
             @Param("search") String search,
             @Param("subjectId") Integer subjectId,

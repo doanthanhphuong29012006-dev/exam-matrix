@@ -25,7 +25,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         WHERE (
             :search IS NULL
             OR LOWER(q.content) LIKE LOWER(
-                CONCAT('%', :search, '%')
+                CONCAT('%', CAST(:search AS string), '%')
             )
         )
         AND (
@@ -44,7 +44,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
             :type IS NULL
             OR q.type = :type
         )
-        """)
+    """)
     Page<Question> searchQuestions(
         @Param("search") String search,
         @Param("subjectId") Integer subjectId,
