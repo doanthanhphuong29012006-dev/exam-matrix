@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { api } from '../api/service'
+import { useAuth } from '../auth/AuthContext'
 import { ConfirmModal, EmptyState, ErrorState, FieldError, LoadingState, Modal, PageHeader } from '../components/UI'
 import { useToast } from '../components/ToastProvider'
 
@@ -14,13 +15,15 @@ function SubjectForm({ item, onClose }) {
 }
 
 export default function SubjectsPage() {
+  const { user } = useAuth()
+  const isAdmin = user?.role === 'ADMIN'
   const [search, setSearch] = useState(''); const [editing, setEditing] = useState(null); const [deleting, setDeleting] = useState(null); const { notify } = useToast(); const queryClient = useQueryClient()
   const query = useQuery({ queryKey: ['subjects'], queryFn: api.getSubjects })
-  const deleteMutation = useMutation({ mutationFn: api.deleteSubject, onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['subjects'] }); notify('Đã xóa môn học'); setDeleting(null) }, onError: (error) => notify(error.message, 'error') })
+  const deleteMutation = useMutation({ mutationFn: api.deleteSubject, onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['subjects'] }); queryClient.invalidateQueries({ queryKey: ['dashboard'] }); notify('Đã xóa môn học'); setDeleting(null) }, onError: (error) => notify(error.message, 'error') })
   const items = useMemo(() => (query.data || []).filter((x) => `${x.code} ${x.name}`.toLocaleLowerCase('vi').includes(search.toLocaleLowerCase('vi'))), [query.data, search])
-  return <><PageHeader title="Quản lý môn học" description="Tổ chức môn học và truy cập nhanh danh sách chương." action={<button className="button" onClick={() => setEditing({})}>Thêm môn học</button>} />
+  return <><PageHeader title="Quản lý môn học" description="Tổ chức môn học và truy cập nhanh danh sách chương." action={isAdmin && <button className="button" onClick={() => setEditing({})}>Thêm môn học</button>} />
     <div className="toolbar"><label className="search-field">Tìm kiếm<input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nhập mã hoặc tên môn học" /></label></div>
-    {query.isLoading ? <LoadingState /> : query.isError ? <ErrorState error={query.error} onRetry={query.refetch} /> : !items.length ? <EmptyState /> : <div className="table-wrap"><table><thead><tr><th>Mã</th><th>Tên môn học</th><th>Mô tả</th><th>Thao tác</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><strong>{item.code}</strong></td><td>{item.name}</td><td className="long-cell">{item.description || '—'}</td><td><div className="table-actions"><Link className="text-button" to={`/chuong?subjectId=${item.id}`}>Xem chương</Link><button className="text-button" onClick={() => setEditing(item)}>Sửa</button><button className="text-button danger-text" onClick={() => setDeleting(item)}>Xóa</button></div></td></tr>)}</tbody></table></div>}
+    {query.isLoading ? <LoadingState /> : query.isError ? <ErrorState error={query.error} onRetry={query.refetch} /> : !items.length ? <EmptyState /> : <div className="table-wrap"><table><thead><tr><th>Mã</th><th>Tên môn học</th><th>Mô tả</th><th>Thao tác</th></tr></thead><tbody>{items.map((item) => <tr key={item.id}><td><strong>{item.code}</strong></td><td>{item.name}</td><td className="long-cell">{item.description || '—'}</td><td><div className="table-actions"><Link className="text-button" to={`/chuong?subjectId=${item.id}`}>Xem chương</Link>{isAdmin && <><button className="text-button" onClick={() => setEditing(item)}>Sửa</button><button className="text-button danger-text" onClick={() => setDeleting(item)}>Xóa</button></>}</div></td></tr>)}</tbody></table></div>}
     {editing && <SubjectForm item={editing.id ? editing : null} onClose={() => setEditing(null)} />}{deleting && <ConfirmModal message={`Xóa môn học “${deleting.name}”? Dữ liệu đã xóa không thể khôi phục.`} onClose={() => setDeleting(null)} onConfirm={() => deleteMutation.mutate(deleting.id)} busy={deleteMutation.isPending} />}
   </>
 }

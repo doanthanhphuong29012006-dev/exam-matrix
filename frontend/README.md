@@ -1,6 +1,6 @@
 # Exam Matrix Frontend
 
-Frontend ReactJS cho hệ thống quản lý ngân hàng câu hỏi, ma trận đề và sinh đề thi.
+Frontend ReactJS cho hệ thống quản lý ngân hàng câu hỏi trắc nghiệm/tự luận, ma trận đề và sinh đề thi. Ma trận trắc nghiệm và tự luận được quản lý riêng; phiên bản này không hỗ trợ đề kết hợp hoặc chấm bài trực tuyến.
 
 ## Chạy dự án
 
