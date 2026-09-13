@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Collection;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, UUID> {
@@ -56,6 +57,12 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
     long countByChapter_IdAndDifficulty(Integer chapterId, Difficulty difficulty);
 
+    long countByChapter_IdAndDifficultyAndTypeIn(Integer chapterId, Difficulty difficulty,
+                                                 Collection<QuestionType> types);
+
+    @EntityGraph(attributePaths = "answers")
+    List<Question> findByChapter_IdAndDifficultyAndTypeIn(Integer chapterId, Difficulty difficulty,
+                                                          Collection<QuestionType> types);
     @Override
     @EntityGraph(attributePaths = {
         "chapter",
