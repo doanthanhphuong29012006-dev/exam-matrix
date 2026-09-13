@@ -18,4 +18,5 @@ public class PaperQuestionResponse {
     private QuestionType type;
     private Difficulty difficulty;
     private List<AnswerResponse> answers;
+    private String referenceAnswer;
 }
