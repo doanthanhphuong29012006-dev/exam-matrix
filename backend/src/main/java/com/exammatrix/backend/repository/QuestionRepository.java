@@ -56,6 +56,12 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
 
     long countByChapter_IdAndDifficulty(Integer chapterId, Difficulty difficulty);
 
+    long countByChapter_IdAndDifficultyAndTypeIn(
+            Integer chapterId,
+            Difficulty difficulty,
+            List<QuestionType> types
+    );
+
     @Override
     @EntityGraph(attributePaths = {
         "chapter",
@@ -68,6 +74,13 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findAllByChapter_IdAndDifficulty(
             Integer chapterId,
             Difficulty difficulty
+    );
+
+    @EntityGraph(attributePaths = "answers")
+    List<Question> findAllByChapter_IdAndDifficultyAndTypeIn(
+            Integer chapterId,
+            Difficulty difficulty,
+            List<QuestionType> types
     );
 
     long countByDifficulty(Difficulty difficulty);

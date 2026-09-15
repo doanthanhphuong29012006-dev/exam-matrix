@@ -1,5 +1,6 @@
 package com.exammatrix.backend.entity;
 
+import com.exammatrix.backend.entity.enums.ExamType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,6 +30,11 @@ public class ExamMatrix {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exam_type", length = 20, nullable = false)
+    @Builder.Default
+    private ExamType examType = ExamType.OBJECTIVE;
 
     @Column(name = "title", length = 100, nullable = false)
     private String title;

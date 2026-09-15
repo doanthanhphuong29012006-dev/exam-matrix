@@ -5,6 +5,7 @@ import com.exammatrix.backend.dto.request.GenerateExamPapersRequest;
 import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.ExamPaperDetailResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
+import com.exammatrix.backend.service.ExamGenerationService;
 import com.exammatrix.backend.service.ExamMatrixService;
 import com.exammatrix.backend.service.ExamPaperService;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ import java.util.UUID;
 public class ExamMatrixController {
     private final ExamMatrixService examMatrixService;
     private final ExamPaperService examPaperService;
+    private final ExamGenerationService examGenerationService;
 
     @GetMapping
     public ResponseEntity<PageResponse<ExamMatrixResponse>> getAllExamMatrices(
@@ -83,7 +85,7 @@ public class ExamMatrixController {
             @Valid @RequestBody
             GenerateExamPapersRequest request
     ) {
-        List<ExamPaperDetailResponse> responses = examPaperService.generateExamPapers(
+        List<ExamPaperDetailResponse> responses = examGenerationService.generateExamPapers(
                 id,
                 request
         );
