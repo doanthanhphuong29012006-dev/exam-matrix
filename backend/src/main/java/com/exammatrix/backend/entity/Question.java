@@ -32,6 +32,10 @@ public class Question {
     @Column(name = "type", length = 20, nullable = false)
     private QuestionType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exam_type", nullable = false)
+    private ExamType examType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id", nullable = false)
     private Chapter chapter;

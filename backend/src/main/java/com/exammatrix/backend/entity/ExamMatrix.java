@@ -30,6 +30,10 @@ public class ExamMatrix {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exam_type")
+    private ExamType examType;
+
     @Column(name = "title", length = 100, nullable = false)
     private String title;
 

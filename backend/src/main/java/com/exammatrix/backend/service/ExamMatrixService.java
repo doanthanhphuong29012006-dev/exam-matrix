@@ -10,6 +10,7 @@ public interface ExamMatrixService {
     PageResponse<ExamMatrixResponse> getAllExamMatrices(
             String search,
             Integer subjectId,
+            ExamType examType,
             Integer page,
             Integer size
     );
@@ -19,6 +20,8 @@ public interface ExamMatrixService {
     ExamMatrixResponse createExamMatrix(ExamMatrixRequest request);
 
     ExamMatrixResponse updateExamMatrix(UUID id, ExamMatrixRequest request);
+
+    void updateOldMatrices();
 
     void deleteExamMatrix(UUID id);
 }

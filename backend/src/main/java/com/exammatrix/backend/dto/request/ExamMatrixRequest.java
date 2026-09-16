@@ -27,6 +27,9 @@ public class ExamMatrixRequest {
     @Min(value = 1, message = "Tổng số câu phải lớn hơn 0")
     private Integer totalQuestions;
 
+    @NotNull(message = "Loại đề không được để trống")
+    private ExamType examType;
+
     @NotEmpty(message = "Ma trận phải có ít nhất một cấu hình")
     @Valid
     private List<MatrixConfigRequest> configs;
