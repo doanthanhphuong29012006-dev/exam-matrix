@@ -3,6 +3,7 @@ package com.exammatrix.backend.service.impl;
 import com.exammatrix.backend.dto.request.GenerateExamPapersRequest;
 import com.exammatrix.backend.dto.response.*;
 import com.exammatrix.backend.entity.*;
+import com.exammatrix.backend.entity.enums.QuestionType;
 import com.exammatrix.backend.repository.ExamMatrixRepository;
 import com.exammatrix.backend.repository.ExamPaperRepository;
 import com.exammatrix.backend.repository.QuestionRepository;
@@ -274,14 +275,24 @@ public class ExamPaperServiceImpl implements ExamPaperService {
 
             List<AnswerResponse> answerResponses = new ArrayList<>();
 
-            for (Answer answer : question.getAnswers()) {
-                answerResponses.add(new AnswerResponse(
-                            answer.getId(),
-                            answer.getContent(),
-                            answer.getIsCorrect()
-                    )
-                );
+            if (question.getType() != QuestionType.ESSAY) {
+                for (Answer answer : question.getAnswers()) {
+                    answerResponses.add(
+                            new AnswerResponse(
+                                    answer.getId(),
+                                    answer.getContent(),
+                                    answer.getIsCorrect()
+                            )
+                    );
+                }
             }
+
+            String referenceAnswer = null;
+
+            if (question.getType() == QuestionType.ESSAY) {
+                referenceAnswer = question.getReferenceAnswer();
+            }
+
 
             questionResponses.add(new PaperQuestionResponse(
                         question.getId(),
@@ -289,7 +300,8 @@ public class ExamPaperServiceImpl implements ExamPaperService {
                         question.getContent(),
                         question.getType(),
                         question.getDifficulty(),
-                        answerResponses
+                        answerResponses,
+                        referenceAnswer
                 )
             );
         }
