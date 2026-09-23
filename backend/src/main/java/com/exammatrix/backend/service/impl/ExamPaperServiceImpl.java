@@ -3,6 +3,7 @@ package com.exammatrix.backend.service.impl;
 import com.exammatrix.backend.dto.request.GenerateExamPapersRequest;
 import com.exammatrix.backend.dto.response.*;
 import com.exammatrix.backend.entity.*;
+import com.exammatrix.backend.entity.enums.QuestionType;
 import com.exammatrix.backend.repository.ExamMatrixRepository;
 import com.exammatrix.backend.repository.ExamPaperRepository;
 import com.exammatrix.backend.repository.QuestionRepository;
@@ -288,6 +289,7 @@ public class ExamPaperServiceImpl implements ExamPaperService {
                     );
                 }
             }
+
 
             questionResponses.add(new PaperQuestionResponse(
                         question.getId(),

@@ -5,6 +5,7 @@ import com.exammatrix.backend.dto.request.GenerateExamPapersRequest;
 import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.ExamPaperDetailResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.service.ExamGenerationService;
 import com.exammatrix.backend.service.ExamMatrixService;
 import com.exammatrix.backend.service.ExamPaperService;
@@ -33,6 +34,9 @@ public class ExamMatrixController {
             @RequestParam(required = false)
             Integer subjectId,
 
+            @RequestParam(required = false)
+            ExamType examType,
+
             @RequestParam(defaultValue = "0")
             Integer page,
 
@@ -42,6 +46,7 @@ public class ExamMatrixController {
         PageResponse<ExamMatrixResponse> response = examMatrixService.getAllExamMatrices(
                 search,
                 subjectId,
+                examType,
                 page,
                 size
         );

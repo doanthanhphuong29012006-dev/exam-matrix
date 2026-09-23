@@ -6,8 +6,10 @@ import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.MatrixConfigResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.entity.*;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.repository.ChapterRepository;
 import com.exammatrix.backend.repository.ExamMatrixRepository;
+import com.exammatrix.backend.repository.ExamPaperRepository;
 import com.exammatrix.backend.repository.QuestionRepository;
 import com.exammatrix.backend.repository.SubjectRepository;
 import com.exammatrix.backend.security.CurrentUserService;
@@ -17,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
@@ -25,6 +28,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ExamMatrixServiceImpl implements ExamMatrixService {
     private final ExamMatrixRepository examMatrixRepository;
+    private final ExamPaperRepository examPaperRepository;
     private final SubjectRepository subjectRepository;
     private final ChapterRepository chapterRepository;
     private final QuestionRepository questionRepository;
@@ -34,6 +38,7 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
     public PageResponse<ExamMatrixResponse> getAllExamMatrices(
             String search,
             Integer subjectId,
+            ExamType examType,
             Integer page,
             Integer size
     ) {
@@ -60,6 +65,7 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
         Page<ExamMatrix> matrixPage = examMatrixRepository.searchExamMatrices(
                 normalizedSearch,
                 subjectId,
+                examType,
                 teacherFilter,
                 pageable
         );
@@ -101,6 +107,7 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
 
         matrix.setTeacher(currentUser);
         matrix.setSubject(subject);
+        matrix.setExamType(request.getExamType());
         matrix.setTitle(request.getTitle().trim());
         matrix.setDuration(request.getDuration());
         matrix.setTotalQuestions(request.getTotalQuestions());
@@ -113,13 +120,15 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
     }
 
     @Override
+    @Transactional
     public ExamMatrixResponse updateExamMatrix(UUID id, ExamMatrixRequest request) {
         User currentUser = currentUserService.getCurrentUser();
 
         ExamMatrix matrix = findExamMatrixById(id);
 
         checkCanModify(matrix, currentUser);
-
+        validateMatrixNotGenerated(id);
+        notUnchangeExamType(matrix, request);
         Subject subject = findSubjectById(request.getSubjectId());
 
         matrix.setSubject(subject);
@@ -143,6 +152,7 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
         ExamMatrix matrix = findExamMatrixById(id);
 
         checkCanModify(matrix, currentUser);
+        validateMatrixNotGenerated(id);
 
         try {
             examMatrixRepository.delete(matrix);
@@ -154,7 +164,23 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
             );
         }
     }
+    private void notUnchangeExamType(ExamMatrix matrix, ExamMatrixRequest request){
+        if(!matrix.getExamType().equals(request.getExamType())){
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Không thể thay đổi examType"
+            );
+        }
+    }
+    private void validateMatrixNotGenerated(UUID matrixId){
+        if(examPaperRepository.existsByExamMatrix_Id(matrixId)){
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Không thể thay đổi ma trận đã được dùng để sinh đề"
+            );
+        }
 
+    }
     private void addAndValidateConfigs(ExamMatrix matrix, ExamMatrixRequest request) {
         if (request.getConfigs() == null || request.getConfigs().isEmpty()) {
             throw new ResponseStatusException(
@@ -213,8 +239,9 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
                 );
             }
 
-            long availableQuestions = questionRepository.countByChapter_IdAndDifficulty(
+            long availableQuestions = questionRepository.countByChapter_IdAndExamTypeAndDifficulty(
                     chapter.getId(),
+                    request.getExamType(),
                     configRequest.getDifficulty()
             );
 
@@ -353,9 +380,16 @@ public class ExamMatrixServiceImpl implements ExamMatrixService {
                 matrix.getTitle(),
                 matrix.getDuration(),
                 matrix.getTotalQuestions(),
+                matrix.getExamType(),
                 configResponses,
                 matrix.getCreatedAt(),
                 matrix.getUpdatedAt()
         );
+    }
+
+    @Override
+    @Transactional
+    public void updateOldMatrices(){
+        examMatrixRepository.updateNullExamType(ExamType.OBJECTIVE);
     }
 }

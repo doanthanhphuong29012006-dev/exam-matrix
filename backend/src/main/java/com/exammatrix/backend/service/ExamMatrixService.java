@@ -3,6 +3,7 @@ package com.exammatrix.backend.service;
 import com.exammatrix.backend.dto.request.ExamMatrixRequest;
 import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
+import com.exammatrix.backend.entity.enums.ExamType;
 
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ public interface ExamMatrixService {
     PageResponse<ExamMatrixResponse> getAllExamMatrices(
             String search,
             Integer subjectId,
+            ExamType examType,
             Integer page,
             Integer size
     );
@@ -19,6 +21,8 @@ public interface ExamMatrixService {
     ExamMatrixResponse createExamMatrix(ExamMatrixRequest request);
 
     ExamMatrixResponse updateExamMatrix(UUID id, ExamMatrixRequest request);
+
+    void updateOldMatrices();
 
     void deleteExamMatrix(UUID id);
 }

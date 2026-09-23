@@ -39,6 +39,8 @@ public interface ExamPaperRepository extends JpaRepository<ExamPaper, UUID> {
             String examCode
     );
 
+    boolean existsByExamMatrix_Id(UUID matrixId);
+
     @Override
     @EntityGraph(attributePaths = {
             "examMatrix",

@@ -1,12 +1,14 @@
 package com.exammatrix.backend.repository;
 
 import com.exammatrix.backend.entity.ExamMatrix;
+import com.exammatrix.backend.entity.enums.ExamType;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -29,6 +31,10 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
             )
         )
         AND (
+            :examType IS NULL
+            OR m.examType = :examType
+        )
+        AND (
             :subjectId IS NULL
             OR s.id = :subjectId
         )
@@ -40,9 +46,18 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
     Page<ExamMatrix> searchExamMatrices(
             @Param("search") String search,
             @Param("subjectId") Integer subjectId,
+            @Param("examType") ExamType examType,
             @Param("teacherId") UUID teacherId,
             Pageable pageable
     );
+    @Modifying
+    @Query("""
+            UPDATE ExamMatrix e
+            SET e.examType = :examType
+            WHERE e.examType IS NULL
+            """)
+    int updateNullExamType(@Param("examType") ExamType examType);
+
 
     @Override
     @EntityGraph(attributePaths = {

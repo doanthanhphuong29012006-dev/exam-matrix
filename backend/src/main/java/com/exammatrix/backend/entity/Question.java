@@ -1,6 +1,7 @@
 package com.exammatrix.backend.entity;
 
 import com.exammatrix.backend.entity.enums.Difficulty;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.entity.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,6 +32,10 @@ public class Question {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 20, nullable = false)
     private QuestionType type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "exam_type", nullable = false)
+    private ExamType examType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chapter_id", nullable = false)

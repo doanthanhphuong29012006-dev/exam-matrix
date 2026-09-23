@@ -1,5 +1,6 @@
 package com.exammatrix.backend.dto.request;
 
+import com.exammatrix.backend.entity.enums.ExamType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -26,6 +27,9 @@ public class ExamMatrixRequest {
     @NotNull(message = "Tổng số câu không được để trống")
     @Min(value = 1, message = "Tổng số câu phải lớn hơn 0")
     private Integer totalQuestions;
+
+    @NotNull(message = "Loại đề không được để trống")
+    private ExamType examType;
 
     @NotEmpty(message = "Ma trận phải có ít nhất một cấu hình")
     @Valid
