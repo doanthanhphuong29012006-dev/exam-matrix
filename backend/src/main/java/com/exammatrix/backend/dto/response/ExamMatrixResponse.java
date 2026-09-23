@@ -1,5 +1,6 @@
 package com.exammatrix.backend.dto.response;
 
+import com.exammatrix.backend.entity.enums.ExamType;
 import lombok.*;
 
 import java.time.LocalDateTime;

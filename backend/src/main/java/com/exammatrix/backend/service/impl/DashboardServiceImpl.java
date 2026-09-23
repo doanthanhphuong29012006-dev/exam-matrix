@@ -105,6 +105,7 @@ public class DashboardServiceImpl implements DashboardService {
                 matrix.getTitle(),
                 matrix.getDuration(),
                 matrix.getTotalQuestions(),
+                matrix.getExamType(),
                 configResponses,
                 matrix.getCreatedAt(),
                 matrix.getUpdatedAt()

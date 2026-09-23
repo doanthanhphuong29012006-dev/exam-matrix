@@ -1,5 +1,6 @@
 package com.exammatrix.backend.dto.request;
 
+import com.exammatrix.backend.entity.enums.ExamType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.*;

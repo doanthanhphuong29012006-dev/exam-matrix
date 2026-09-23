@@ -3,6 +3,7 @@ package com.exammatrix.backend.service;
 import com.exammatrix.backend.dto.request.ExamMatrixRequest;
 import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
+import com.exammatrix.backend.entity.enums.ExamType;
 
 import java.util.UUID;
 

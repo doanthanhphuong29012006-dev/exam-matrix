@@ -1,6 +1,7 @@
 package com.exammatrix.backend.entity;
 
 import com.exammatrix.backend.entity.enums.Difficulty;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.entity.enums.QuestionType;
 import jakarta.persistence.*;
 import lombok.*;

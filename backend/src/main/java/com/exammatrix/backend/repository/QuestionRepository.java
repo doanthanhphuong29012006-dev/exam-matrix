@@ -2,6 +2,7 @@ package com.exammatrix.backend.repository;
 
 import com.exammatrix.backend.entity.Question;
 import com.exammatrix.backend.entity.enums.Difficulty;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.entity.enums.QuestionType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -55,14 +56,25 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         Pageable pageable
     );
 
-    long countByChapter_IdAndExamTypeAndDifficulty(Integer chapterId, ExamType examType, Difficulty difficulty);
+    long countByChapter_IdAndExamTypeAndDifficulty(
+            Integer chapterId,
+            ExamType examType,
+            Difficulty difficulty
+    );
 
-    long countByChapter_IdAndDifficultyAndTypeIn(Integer chapterId, Difficulty difficulty,
-                                                 Collection<QuestionType> types);
+    long countByChapter_IdAndDifficultyAndTypeIn(
+            Integer chapterId,
+            Difficulty difficulty,
+            Collection<QuestionType> types
+    );
 
     @EntityGraph(attributePaths = "answers")
-    List<Question> findByChapter_IdAndDifficultyAndTypeIn(Integer chapterId, Difficulty difficulty,
-                                                          Collection<QuestionType> types);
+    List<Question> findByChapter_IdAndDifficultyAndTypeIn(
+            Integer chapterId,
+            Difficulty difficulty,
+            Collection<QuestionType> types
+    );
+
     @Override
     @EntityGraph(attributePaths = {
         "chapter",
@@ -75,6 +87,13 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
     List<Question> findAllByChapter_IdAndDifficulty(
             Integer chapterId,
             Difficulty difficulty
+    );
+
+    @EntityGraph(attributePaths = "answers")
+    List<Question> findAllByChapter_IdAndDifficultyAndTypeIn(
+            Integer chapterId,
+            Difficulty difficulty,
+            Collection<QuestionType> types
     );
 
     long countByDifficulty(Difficulty difficulty);

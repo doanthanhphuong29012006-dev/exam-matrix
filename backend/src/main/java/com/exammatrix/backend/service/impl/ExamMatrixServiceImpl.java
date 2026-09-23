@@ -6,8 +6,10 @@ import com.exammatrix.backend.dto.response.ExamMatrixResponse;
 import com.exammatrix.backend.dto.response.MatrixConfigResponse;
 import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.entity.*;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.repository.ChapterRepository;
 import com.exammatrix.backend.repository.ExamMatrixRepository;
+import com.exammatrix.backend.repository.ExamPaperRepository;
 import com.exammatrix.backend.repository.QuestionRepository;
 import com.exammatrix.backend.repository.SubjectRepository;
 import com.exammatrix.backend.security.CurrentUserService;
@@ -17,6 +19,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.*;
