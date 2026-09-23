@@ -20,5 +20,6 @@ public class QuestionResponse {
     private Difficulty difficulty;
     private QuestionType type;
     private List<AnswerResponse> answers;
+    private String referenceAnswer;
     private LocalDateTime createdAt;
 }

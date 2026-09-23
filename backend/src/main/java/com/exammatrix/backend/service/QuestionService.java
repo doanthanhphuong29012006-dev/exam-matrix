@@ -6,6 +6,7 @@ import com.exammatrix.backend.dto.response.QuestionAvailabilityResponse;
 import com.exammatrix.backend.dto.response.QuestionResponse;
 import com.exammatrix.backend.entity.enums.Difficulty;
 import com.exammatrix.backend.entity.enums.QuestionType;
+import com.exammatrix.backend.entity.enums.ExamType;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +34,7 @@ public interface QuestionService {
     void deleteQuestion(UUID id);
 
     List<QuestionAvailabilityResponse> getAvailability(
-            Integer subjectId
+            Integer subjectId,
+            ExamType examType
     );
 }

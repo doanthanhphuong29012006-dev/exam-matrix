@@ -5,6 +5,7 @@ import com.exammatrix.backend.dto.response.PageResponse;
 import com.exammatrix.backend.dto.response.QuestionAvailabilityResponse;
 import com.exammatrix.backend.dto.response.QuestionResponse;
 import com.exammatrix.backend.entity.enums.Difficulty;
+import com.exammatrix.backend.entity.enums.ExamType;
 import com.exammatrix.backend.entity.enums.QuestionType;
 import com.exammatrix.backend.service.QuestionService;
 import jakarta.validation.Valid;
@@ -31,9 +32,12 @@ public class QuestionController {
     getAvailability(
             @RequestParam
             @Min(value = 1, message = "ID môn học không hợp lệ")
-            Integer subjectId
+            Integer subjectId,
+
+            @RequestParam(defaultValue = "OBJECTIVE")
+            ExamType examType
     ) {
-        return ResponseEntity.ok(questionService.getAvailability(subjectId));
+        return ResponseEntity.ok(questionService.getAvailability(subjectId, examType));
     }
 
     @GetMapping
