@@ -55,7 +55,7 @@ public interface QuestionRepository extends JpaRepository<Question, UUID> {
         Pageable pageable
     );
 
-    long countByChapter_IdAndDifficulty(Integer chapterId, Difficulty difficulty);
+    long countByChapter_IdAndExamTypeAndDifficulty(Integer chapterId, ExamType examType, Difficulty difficulty);
 
     long countByChapter_IdAndDifficultyAndTypeIn(Integer chapterId, Difficulty difficulty,
                                                  Collection<QuestionType> types);

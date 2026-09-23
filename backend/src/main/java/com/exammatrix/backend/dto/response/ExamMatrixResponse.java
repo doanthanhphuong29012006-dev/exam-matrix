@@ -17,6 +17,7 @@ public class ExamMatrixResponse {
     private String title;
     private Integer duration;
     private Integer totalQuestions;
+    private ExamType examType;
     private List<MatrixConfigResponse> configs;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

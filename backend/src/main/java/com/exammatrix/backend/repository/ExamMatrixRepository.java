@@ -29,6 +29,10 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
             )
         )
         AND (
+            :examType IS NULL
+            OR m.examType = :examType
+        )
+        AND (
             :subjectId IS NULL
             OR s.id = :subjectId
         )
@@ -40,9 +44,18 @@ public interface ExamMatrixRepository extends JpaRepository<ExamMatrix, UUID> {
     Page<ExamMatrix> searchExamMatrices(
             @Param("search") String search,
             @Param("subjectId") Integer subjectId,
+            @Param("examType") ExamType examType,
             @Param("teacherId") UUID teacherId,
             Pageable pageable
     );
+    @Modifying
+    @Query("""
+            UPDATE ExamMatrix e
+            SET e.examType = :examType
+            WHERE e.examType IS NULL
+            """)
+    int updateNullExamType(@Param("examType") ExamType examType);
+
 
     @Override
     @EntityGraph(attributePaths = {
