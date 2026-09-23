@@ -17,6 +17,9 @@ import com.exammatrix.backend.repository.QuestionRepository;
 import com.exammatrix.backend.repository.SubjectRepository;
 import com.exammatrix.backend.security.CurrentUserService;
 import com.exammatrix.backend.service.QuestionService;
+import com.exammatrix.backend.entity.enums.ExamType;
+import com.exammatrix.backend.repository.PaperQuestionRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final QuestionRepository questionRepository;
     private final ChapterRepository chapterRepository;
     private final SubjectRepository subjectRepository;
+    private final PaperQuestionRepository paperQuestionRepository;
     private final CurrentUserService currentUserService;
 
     @Override
@@ -116,7 +121,14 @@ public class QuestionServiceImpl implements QuestionService {
         question.setDifficulty(request.getDifficulty());
         question.setType(request.getType());
 
-        addAnswersToQuestion(question, request.getAnswers());
+        if (request.getType() == QuestionType.ESSAY) {
+            question.setReferenceAnswer(request.getReferenceAnswer().trim());
+        } else {
+            question.setReferenceAnswer(null);
+            if (request.getAnswers() != null) {
+                addAnswersToQuestion(question, request.getAnswers());
+            }
+        }
 
         Question savedQuestion = questionRepository.save(question);
 
@@ -131,6 +143,13 @@ public class QuestionServiceImpl implements QuestionService {
 
         checkCanModify(question, currentUser);
 
+        if (paperQuestionRepository.existsByQuestion_Id(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Câu hỏi đã được sử dụng trong đề thi, không thể chỉnh sửa"
+            );
+        }
+
         validateQuestionRequest(request);
 
         Chapter chapter = findChapterById(request.getChapterId());
@@ -142,7 +161,14 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.getAnswers().clear();
 
-        addAnswersToQuestion(question, request.getAnswers());
+        if (request.getType() == QuestionType.ESSAY) {
+            question.setReferenceAnswer(request.getReferenceAnswer().trim());
+        } else {
+            question.setReferenceAnswer(null);
+            if (request.getAnswers() != null) {
+                addAnswersToQuestion(question, request.getAnswers());
+            }
+        }
 
         Question savedQuestion = questionRepository.save(question);
 
@@ -157,6 +183,13 @@ public class QuestionServiceImpl implements QuestionService {
 
         checkCanModify(question, currentUser);
 
+        if (paperQuestionRepository.existsByQuestion_Id(id)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Không thể xóa câu hỏi đang được sử dụng trong đề thi"
+            );
+        }
+
         try {
             questionRepository.delete(question);
 
@@ -170,7 +203,7 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<QuestionAvailabilityResponse> getAvailability(Integer subjectId) {
+    public List<QuestionAvailabilityResponse> getAvailability(Integer subjectId, ExamType examType) {
         currentUserService.getCurrentUser();
 
         if (subjectId == null || subjectId < 1) {
@@ -187,15 +220,21 @@ public class QuestionServiceImpl implements QuestionService {
             );
         }
 
+        ExamType safeExamType = (examType != null) ? examType : ExamType.OBJECTIVE;
+        Set<QuestionType> targetTypes = (safeExamType == ExamType.ESSAY)
+                ? Set.of(QuestionType.ESSAY)
+                : Set.of(QuestionType.SINGLE_CHOICE, QuestionType.MULTIPLE_CHOICE, QuestionType.TRUE_FALSE);
+
         List<Chapter> chapters = chapterRepository.findAllBySubjectIdOrderByOrderIndexAsc(subjectId);
 
         List<QuestionAvailabilityResponse> responses = new ArrayList<>();
 
         for (Chapter chapter : chapters) {
             for (Difficulty difficulty : Difficulty.values()) {
-                long available = questionRepository.countByChapter_IdAndDifficulty(
+                long available = questionRepository.countByChapter_IdAndDifficultyAndTypeIn(
                         chapter.getId(),
-                        difficulty
+                        difficulty,
+                        targetTypes
                 );
 
                 responses.add(new QuestionAvailabilityResponse(
@@ -211,18 +250,52 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private void validateQuestionRequest(QuestionRequest request) {
-        if (request.getAnswers() == null || request.getAnswers().size() < 2) {
+        if(request.getType() == null){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Loại câu hỏi không hợp lệ");
+        }
 
+        if (request.getType() == QuestionType.ESSAY) {
+            if (request.getAnswers() != null && !request.getAnswers().isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Câu hỏi tự luận không được có đáp án lựa chọn"
+                );
+            }
+
+            if (request.getReferenceAnswer() == null || request.getReferenceAnswer().trim().isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Vui lòng nhập đáp án tham khảo cho câu hỏi tự luận"
+                );
+            }
+
+            if (request.getReferenceAnswer().trim().length() > 10000) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Đáp án tham khảo không được vượt quá 10000 ký tự"
+                );
+            }
+            return;
+        }
+
+        if (request.getReferenceAnswer() != null) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Câu hỏi phải có ít nhất 2 đáp án"
+                    HttpStatus.BAD_REQUEST,
+                    "Câu hỏi trắc nghiệm không được có đáp án tham khảo"
             );
         }
 
-        if (request.getType() == null) {
+        if (request.getAnswers() == null || request.getAnswers().size() < 2) {
             throw new ResponseStatusException(
-                HttpStatus.BAD_REQUEST,
-                "Loại câu hỏi không hợp lệ"
+                    HttpStatus.BAD_REQUEST,
+                    "Câu hỏi phải có ít nhất 2 đáp án"
+            );
+        }
+
+        if (request.getAnswers().stream().anyMatch(Objects::isNull)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Danh sách đáp án không được chứa phần tử rỗng"
             );
         }
 
@@ -230,29 +303,26 @@ public class QuestionServiceImpl implements QuestionService {
                 .stream()
                 .filter(answer -> Boolean.TRUE.equals(answer.getIsCorrect()))
                 .count();
-
         switch (request.getType()) {
             case SINGLE_CHOICE -> {
                 if (correctAnswerCount != 1) {
                     throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Câu hỏi một lựa chọn phải có đúng 1 đáp án đúng"
+                            HttpStatus.BAD_REQUEST,
+                            "Câu hỏi một lựa chọn phải có đúng 1 đáp án đúng"
                     );
                 }
             }
-
             case MULTIPLE_CHOICE -> {
                 if (correctAnswerCount < 1) {
                     throw new ResponseStatusException(
-                        HttpStatus.BAD_REQUEST,
-                        "Câu hỏi nhiều lựa chọn phải có ít nhất 1 đáp án đúng"
+                            HttpStatus.BAD_REQUEST,
+                            "Câu hỏi nhiều lựa chọn phải có ít nhất 1 đáp án đúng"
                     );
                 }
             }
-
             case TRUE_FALSE -> validateTrueFalseAnswers(
-                request.getAnswers(),
-                correctAnswerCount
+                    request.getAnswers(),
+                    correctAnswerCount
             );
         }
     }
@@ -358,24 +428,27 @@ public class QuestionServiceImpl implements QuestionService {
     private QuestionResponse convertToResponse(Question question) {
         List<AnswerResponse> answerResponses = new ArrayList<>();
 
-        for (Answer answer : question.getAnswers()) {
-            answerResponses.add(new AnswerResponse(
-                    answer.getId(),
-                    answer.getContent(),
-                    answer.getIsCorrect()
-                )
-            );
+        if (question.getAnswers() != null) {
+            for (Answer answer : question.getAnswers()) {
+                answerResponses.add(new AnswerResponse(
+                                answer.getId(),
+                                answer.getContent(),
+                                answer.getIsCorrect()
+                        )
+                );
+            }
         }
 
-        return new QuestionResponse(
-            question.getId(),
-            question.getChapter().getId(),
-            question.getContent(),
-            question.getTeacher().getId(),
-            question.getDifficulty(),
-            question.getType(),
-            answerResponses,
-            question.getCreatedAt()
-        );
+        return QuestionResponse.builder()
+                .id(question.getId())
+                .chapterId(question.getChapter().getId())
+                .content(question.getContent())
+                .teacherId(question.getTeacher().getId())
+                .difficulty(question.getDifficulty())
+                .type(question.getType())
+                .answers(answerResponses)
+                .referenceAnswer(question.getReferenceAnswer())
+                .createdAt(question.getCreatedAt())
+                .build();
     }
 }
